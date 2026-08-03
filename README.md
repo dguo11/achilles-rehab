@@ -8,6 +8,10 @@ trackable daily program.
 or physical therapist. Every generated plan is shown read-only until you
 confirm you've reviewed it with your PT.
 
+**Live (dev) deployment:** https://achilla.dguo11.workers.dev — pre-launch,
+email confirmation is currently disabled in Supabase Auth for local testing
+convenience. Re-enable it before any real user signs up.
+
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind, mobile-first
