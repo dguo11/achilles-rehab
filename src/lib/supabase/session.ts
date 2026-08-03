@@ -2,12 +2,23 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/supabase/database.types";
 
+// Paths reachable without a signed-in session. Everything else is
+// protected by default — safer than an ever-growing "protected" allowlist
+// as new authenticated routes get added in later phases.
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth/confirm"];
+
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some((path) => pathname === path);
+}
+
 /**
  * Refreshes the Supabase auth session on every request so server components
- * always see an up-to-date/non-expired session. Called from the root
- * proxy.ts. Does not itself enforce any route gating (the PT-review
- * gate and other authorization checks live in the route handlers/pages that
- * need them, per-route, not here) — this only keeps the session cookie fresh.
+ * always see an up-to-date/non-expired session, and enforces the
+ * signed-in/signed-out split between protected app routes and the public
+ * marketing/auth routes. Called from the root middleware.ts. Does not
+ * enforce anything beyond that split (the PT-review gate and other
+ * per-record authorization checks live in the route handlers/pages that
+ * need them, not here).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -35,7 +46,21 @@ export async function updateSession(request: NextRequest) {
 
   // Refreshes the session if expired. Required for Server Components, which
   // can't write cookies themselves.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname, search } = request.nextUrl;
+
+  if (!user && !isPublicPath(pathname)) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname + search);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (user && (pathname === "/login" || pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/onboarding/intake", request.url));
+  }
 
   return supabaseResponse;
 }

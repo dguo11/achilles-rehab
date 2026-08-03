@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-8 px-5 py-10">
       <div className="space-y-2">
@@ -21,18 +27,29 @@ export default function Home() {
       <DisclaimerBanner />
 
       <div className="flex flex-col gap-3">
-        <Link
-          href="/signup"
-          className="flex min-h-14 items-center justify-center rounded-xl bg-teal-700 px-6 text-lg font-semibold text-white active:bg-teal-800"
-        >
-          Get started
-        </Link>
-        <Link
-          href="/login"
-          className="flex min-h-14 items-center justify-center rounded-xl border-2 border-neutral-300 px-6 text-lg font-semibold text-neutral-800 active:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-900"
-        >
-          Sign in
-        </Link>
+        {user ? (
+          <Link
+            href="/onboarding/intake"
+            className="flex min-h-14 items-center justify-center rounded-xl bg-teal-700 px-6 text-lg font-semibold text-white active:bg-teal-800"
+          >
+            Continue
+          </Link>
+        ) : (
+          <>
+            <Link
+              href="/signup"
+              className="flex min-h-14 items-center justify-center rounded-xl bg-teal-700 px-6 text-lg font-semibold text-white active:bg-teal-800"
+            >
+              Get started
+            </Link>
+            <Link
+              href="/login"
+              className="flex min-h-14 items-center justify-center rounded-xl border-2 border-neutral-300 px-6 text-lg font-semibold text-neutral-800 active:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-900"
+            >
+              Sign in
+            </Link>
+          </>
+        )}
       </div>
     </main>
   );

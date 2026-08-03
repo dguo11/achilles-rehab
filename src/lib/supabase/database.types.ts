@@ -198,45 +198,111 @@ export type Database = {
       }
       intake_responses: {
         Row: {
+          age_range: string | null
+          available_equipment: Json
+          care_team_status: string | null
+          confidence_baseline: number | null
+          conservative_factors: Json
+          current_boot_wedge_count: number | null
+          current_mobility_aids: Json
+          current_weight_bearing_status: string | null
+          daily_demand: string | null
+          exercise_frequency: string | null
           fitness_level: string | null
+          fitness_tracker: string | null
+          has_stairs_at_home: boolean | null
+          home_notes: string | null
           id: string
           injury_date: string
           injury_type: string
           lifestyle_notes: string | null
+          mental_health_baseline_note: string | null
+          mental_health_flagged: boolean
+          motivation_baseline: number | null
+          pre_existing_tendinosis: string | null
           prior_sports: Json
           protocol_preference: string
+          recovery_goal: string | null
+          red_flag_acknowledged_at: string | null
+          red_flag_signs: Json
+          rupture_type: string | null
           severity: string | null
           side: string
           submitted_at: string
           surgery_date: string | null
+          tendon_augmentation: string | null
           user_id: string
         }
         Insert: {
+          age_range?: string | null
+          available_equipment?: Json
+          care_team_status?: string | null
+          confidence_baseline?: number | null
+          conservative_factors?: Json
+          current_boot_wedge_count?: number | null
+          current_mobility_aids?: Json
+          current_weight_bearing_status?: string | null
+          daily_demand?: string | null
+          exercise_frequency?: string | null
           fitness_level?: string | null
+          fitness_tracker?: string | null
+          has_stairs_at_home?: boolean | null
+          home_notes?: string | null
           id?: string
           injury_date: string
           injury_type: string
           lifestyle_notes?: string | null
+          mental_health_baseline_note?: string | null
+          mental_health_flagged?: boolean
+          motivation_baseline?: number | null
+          pre_existing_tendinosis?: string | null
           prior_sports?: Json
           protocol_preference: string
+          recovery_goal?: string | null
+          red_flag_acknowledged_at?: string | null
+          red_flag_signs?: Json
+          rupture_type?: string | null
           severity?: string | null
           side: string
           submitted_at?: string
           surgery_date?: string | null
+          tendon_augmentation?: string | null
           user_id: string
         }
         Update: {
+          age_range?: string | null
+          available_equipment?: Json
+          care_team_status?: string | null
+          confidence_baseline?: number | null
+          conservative_factors?: Json
+          current_boot_wedge_count?: number | null
+          current_mobility_aids?: Json
+          current_weight_bearing_status?: string | null
+          daily_demand?: string | null
+          exercise_frequency?: string | null
           fitness_level?: string | null
+          fitness_tracker?: string | null
+          has_stairs_at_home?: boolean | null
+          home_notes?: string | null
           id?: string
           injury_date?: string
           injury_type?: string
           lifestyle_notes?: string | null
+          mental_health_baseline_note?: string | null
+          mental_health_flagged?: boolean
+          motivation_baseline?: number | null
+          pre_existing_tendinosis?: string | null
           prior_sports?: Json
           protocol_preference?: string
+          recovery_goal?: string | null
+          red_flag_acknowledged_at?: string | null
+          red_flag_signs?: Json
+          rupture_type?: string | null
           severity?: string | null
           side?: string
           submitted_at?: string
           surgery_date?: string | null
+          tendon_augmentation?: string | null
           user_id?: string
         }
         Relationships: []
