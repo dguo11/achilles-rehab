@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import {
   AGE_RANGES,
   CARE_TEAM_STATUSES,
@@ -747,7 +747,13 @@ export function IntakeWizard() {
     fd.set("confidenceBaseline", String(answers.confidenceBaseline ?? ""));
     fd.set("motivationBaseline", String(answers.motivationBaseline ?? ""));
     fd.set("mentalHealthNote", answers.mentalHealthNote);
-    formAction(fd);
+    // Dispatching outside startTransition breaks Next.js's client-side
+    // handling of the server action's redirect() — the server-side redirect
+    // still happens (confirmed via logs/DB), but the browser never follows
+    // it. useActionState's dispatcher must run inside a transition.
+    startTransition(() => {
+      formAction(fd);
+    });
   }
 
   return (
