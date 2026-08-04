@@ -37,6 +37,17 @@ npm run deploy     # build + deploy to Cloudflare Workers
 Secrets (`SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`) are set with
 `wrangler secret put <NAME>`, not committed.
 
+`.env.production` (committed — it's just the public site URL, not a
+secret) sets `NEXT_PUBLIC_SITE_URL` for production builds. This has to be
+a build-time env file rather than a Worker var: `NEXT_PUBLIC_*` values are
+statically inlined by `next build`, so `wrangler secret put`/Worker `vars`
+can't set them after the fact. `.env.local` must NOT define
+`NEXT_PUBLIC_SITE_URL` — Next.js's env precedence puts `.env.local` above
+`.env.production`, so a leftover `localhost` value there would silently
+override the production one on every deploy (this happened once already —
+it baked `http://localhost:3000` into the signup confirmation email link
+on a live deploy).
+
 > `src/middleware.ts` deliberately uses Next.js's deprecated
 > `middleware`/Edge-runtime convention rather than Next 16's `proxy.ts`:
 > `@opennextjs/cloudflare` doesn't yet support the new Node.js-runtime proxy.

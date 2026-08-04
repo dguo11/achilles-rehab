@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+# Non-secret: just the production site URL, baked into the build by
+# `next build` (NEXT_PUBLIC_* vars are static-replaced at build time, so
+# this can't be set later via `wrangler secret put` or Worker vars).
+!.env.production
 
 # vercel
 .vercel
