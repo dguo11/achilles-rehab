@@ -12,3 +12,25 @@ export const RED_FLAG_OPTIONS = [
 ] as const;
 
 export const NONE_OF_THESE = "None of these";
+
+// The general safety list shown on every protocol's plan-review screen,
+// regardless of what that protocol's own `red_flags` column says. Mirrors
+// the achilla-baseline signs already seeded for Willits (whose source is a
+// research-paper timeline table with no red-flag guidance of its own) —
+// kept here too so the review screen can show it for every protocol,
+// clearly attributed to Achilla rather than to whichever protocol is
+// active, alongside that protocol's own list when it has one.
+export const BASELINE_RED_FLAGS = {
+  title: "Achilla's general safety guidance",
+  attribution:
+    "Not specific to your protocol — this is Achilla's baseline safety guidance, shown to every user.",
+  action: "Contact your surgeon, physical therapist, or care team.",
+  signs: [
+    "Fever",
+    "Uncontrolled pain",
+    "Excessive drainage from the incision",
+    "Unresolving numbness or tingling",
+    "Calf swelling, warmth, or redness (possible DVT)",
+    "A sudden \"pop\" or new gap/weakness (possible re-rupture)",
+  ],
+} as const;
