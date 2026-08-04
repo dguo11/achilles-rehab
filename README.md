@@ -16,7 +16,7 @@ convenience. Re-enable it before any real user signs up.
 separate Worker for testing changes before they reach production
 (`npm run deploy:staging`). Shares the production Supabase project, so
 clean up any test accounts/data the same way test data has always been
-cleaned up in this app. `claude/achilla-architecture-plan-4bkbga` is the
+cleaned up in this app. `claude/achilla-staging` is the
 working/test branch — merge to `main` (which drives the production deploy)
 once changes are verified on staging.
 
