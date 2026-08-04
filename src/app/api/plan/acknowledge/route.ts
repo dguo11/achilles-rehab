@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   // the admin client — a user can only ever see/acknowledge their own row.
   const { data: review, error: fetchError } = await supabase
     .from("plan_reviews")
-    .select("id, user_id, acknowledged, user_protocol_selection_id")
+    .select("id, user_id, acknowledged, user_protocol_selection_id, generated_plan_snapshot")
     .eq("id", body.planReviewId)
     .single();
 
@@ -60,9 +60,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to record acknowledgement." }, { status: 500 });
   }
 
+  // The snapshot's phaseOrderIndex is whatever computeCurrentPhase decided
+  // at generation time (could be > 0 for someone starting the app
+  // mid-recovery) — sync it here so it becomes the source of truth for
+  // the daily tracker and phase-advancement logic, not left at its
+  // insert-time default of 0.
+  const snapshot = review.generated_plan_snapshot as { phaseOrderIndex?: number } | null;
+  const phaseOrderIndex = typeof snapshot?.phaseOrderIndex === "number" ? snapshot.phaseOrderIndex : 0;
+
   await admin
     .from("user_protocol_selections")
-    .update({ status: "active" })
+    .update({ status: "active", current_phase_order_index: phaseOrderIndex })
     .eq("id", review.user_protocol_selection_id)
     .eq("user_id", user.id);
 

@@ -72,6 +72,7 @@ export type Database = {
           note_date: string
           pain_level: number | null
           physical_health_text: string | null
+          red_flag_signs: Json
           rom_notes: string | null
           swelling_level: string | null
           user_id: string
@@ -86,6 +87,7 @@ export type Database = {
           note_date: string
           pain_level?: number | null
           physical_health_text?: string | null
+          red_flag_signs?: Json
           rom_notes?: string | null
           swelling_level?: string | null
           user_id: string
@@ -100,6 +102,7 @@ export type Database = {
           note_date?: string
           pain_level?: number | null
           physical_health_text?: string | null
+          red_flag_signs?: Json
           rom_notes?: string | null
           swelling_level?: string | null
           user_id?: string

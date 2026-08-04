@@ -5,7 +5,7 @@ import { suggestDosage } from "@/lib/gemini/dosage";
 
 type Interventions = Record<string, unknown>;
 
-function flattenExercises(interventions: unknown): { name: string; category: string }[] {
+export function flattenExercises(interventions: unknown): { name: string; category: string }[] {
   if (!interventions || typeof interventions !== "object") return [];
   const out: { name: string; category: string }[] = [];
   for (const [category, items] of Object.entries(interventions as Interventions)) {
