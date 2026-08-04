@@ -11,5 +11,10 @@
   },
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    // Non-secret. Secrets (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY) are
+    // set with `wrangler secret put`, not here.
+    "GEMINI_MODEL": "gemini-3.1-flash-lite"
   }
 }

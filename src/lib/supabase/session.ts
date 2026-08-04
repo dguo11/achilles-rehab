@@ -52,7 +52,13 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname, search } = request.nextUrl;
 
-  if (!user && !isPublicPath(pathname)) {
+  // API routes are called by fetch(), not navigated to — redirecting them
+  // to an HTML login page breaks the client's expectation of a JSON
+  // response. Each API route does its own auth check and returns a proper
+  // 401, so just let unauthenticated API requests through to that.
+  const isApiRoute = pathname.startsWith("/api/");
+
+  if (!user && !isApiRoute && !isPublicPath(pathname)) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname + search);
     return NextResponse.redirect(loginUrl);
