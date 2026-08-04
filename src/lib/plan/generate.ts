@@ -24,7 +24,7 @@ export async function generatePlanSnapshot({
   anchorDate,
   intake,
 }: {
-  protocol: { id: string; name: string; red_flags: unknown };
+  protocol: { id: string; name: string; red_flags: unknown; is_verified: boolean };
   phases: PhaseRow[];
   anchorDate: string;
   intake: {
@@ -61,6 +61,7 @@ export async function generatePlanSnapshot({
   return {
     protocolId: protocol.id,
     protocolName: protocol.name,
+    protocolIsVerified: protocol.is_verified,
     phaseId: phase.id,
     phaseOrderIndex: phase.order_index,
     phase: {

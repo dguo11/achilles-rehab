@@ -7,6 +7,7 @@ import type { PlanSnapshot } from "@/lib/plan/generate";
 import { ExerciseItem } from "@/components/today/exercise-item";
 import { SessionSummaryForm } from "@/components/today/session-summary-form";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
+import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protocol-badge";
 
 const PHASE_COLUMNS =
   "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
@@ -106,6 +107,7 @@ export default async function TodayPage() {
           {activePhase.name ?? activePhase.timeframe_label}
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400">{activePhase.timeframe_label}</p>
+        {snapshot.protocolIsVerified === false && <UnverifiedProtocolBadge />}
       </div>
 
       {canAdvance && (
@@ -158,6 +160,13 @@ export default async function TodayPage() {
         className="flex min-h-14 items-center justify-center rounded-xl border-2 border-neutral-300 px-6 text-base font-semibold text-neutral-800 active:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-900"
       >
         Add today&apos;s health note
+      </Link>
+
+      <Link
+        href="/protocol/upload"
+        className="text-center text-sm font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+      >
+        Using a different written protocol? Upload it
       </Link>
 
       <DisclaimerBanner />

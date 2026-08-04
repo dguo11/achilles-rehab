@@ -12,6 +12,7 @@ import {
 import { generatePlanSnapshot, type PlanSnapshot } from "@/lib/plan/generate";
 import type { PhaseRow } from "@/lib/plan/current-phase";
 import type { Database } from "@/lib/supabase/database.types";
+import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protocol-badge";
 
 const PHASE_COLUMNS =
   "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
@@ -41,7 +42,7 @@ export default async function PlanReviewPage() {
 
   const { data: protocol } = await supabase
     .from("protocols")
-    .select("id, name, red_flags")
+    .select("id, name, red_flags, is_verified")
     .eq("id", selection.protocol_id)
     .single();
 
@@ -131,6 +132,7 @@ export default async function PlanReviewPage() {
           {snapshot.phase.timeframeLabel}
           {snapshot.phase.number ? ` · Phase ${snapshot.phase.number}` : ""}
         </p>
+        {snapshot.protocolIsVerified === false && <UnverifiedProtocolBadge />}
       </div>
 
       {!review.acknowledged && (

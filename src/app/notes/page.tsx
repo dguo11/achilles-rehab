@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { NotesForm } from "@/components/notes/notes-form";
+import { DisclaimerBanner } from "@/components/disclaimer-banner";
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
@@ -68,6 +69,8 @@ export default async function NotesPage() {
             : [],
         }}
       />
+
+      <DisclaimerBanner />
     </main>
   );
 }

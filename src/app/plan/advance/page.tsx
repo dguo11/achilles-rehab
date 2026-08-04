@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdvancePhaseForm } from "@/components/plan/advance-phase-form";
 import type { PhaseRow } from "@/lib/plan/current-phase";
+import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protocol-badge";
+import { DisclaimerBanner } from "@/components/disclaimer-banner";
 
 const PHASE_COLUMNS =
   "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
@@ -26,7 +28,7 @@ export default async function AdvancePhasePage() {
 
   const { data: protocol } = await supabase
     .from("protocols")
-    .select("gating")
+    .select("gating, is_verified")
     .eq("id", selection.protocol_id)
     .single();
 
@@ -66,6 +68,7 @@ export default async function AdvancePhasePage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Ready to move to {nextPhase.name ?? nextPhase.timeframe_label}?
         </h1>
+        {protocol?.is_verified === false && <UnverifiedProtocolBadge />}
       </div>
 
       {criteria.length > 0 ? (
@@ -82,6 +85,8 @@ export default async function AdvancePhasePage() {
         criteria={criteria}
         nextPhaseName={nextPhase.name ?? nextPhase.timeframe_label}
       />
+
+      <DisclaimerBanner />
     </main>
   );
 }

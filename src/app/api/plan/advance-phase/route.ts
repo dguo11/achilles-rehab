@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
   const { data: protocol } = await supabase
     .from("protocols")
-    .select("id, name, gating, red_flags")
+    .select("id, name, gating, red_flags, is_verified")
     .eq("id", selection.protocol_id)
     .single();
 
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
   // whenever timeframe_start_days lines up, but we want the phase the user
   // just confirmed, so build the snapshot directly from nextPhase.
   const snapshot = await generatePlanSnapshot({
-    protocol: { id: protocol.id, name: protocol.name, red_flags: protocol.red_flags },
+    protocol: { id: protocol.id, name: protocol.name, red_flags: protocol.red_flags, is_verified: protocol.is_verified },
     phases: [nextPhase],
     anchorDate: selection.anchor_date,
     intake: {
