@@ -17,6 +17,8 @@ export async function SiteHeader() {
         <nav className="flex items-center gap-3 text-sm font-medium text-neutral-600 dark:text-neutral-300">
           <Link href="/today">Today</Link>
           <Link href="/notes">Notes</Link>
+          <Link href="/history">History</Link>
+          <Link href="/calendar">Calendar</Link>
         </nav>
       </div>
       <div className="flex items-center gap-3">

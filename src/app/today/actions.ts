@@ -68,6 +68,9 @@ export async function submitSessionSummaryAction(
   const painLevel = formData.get("painLevel") ? Number(formData.get("painLevel")) : null;
   const effortLevel = formData.get("effortLevel") ? Number(formData.get("effortLevel")) : null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
+  const durationRaw = formData.get("durationMinutes");
+  const durationMinutes =
+    durationRaw && Number(durationRaw) > 0 ? Math.round(Number(durationRaw)) : null;
 
   // Session-level summary is stored as a session_logs row with no
   // daily_plan_entry_id — one per user per day.
@@ -83,6 +86,7 @@ export async function submitSessionSummaryAction(
     pain_level: painLevel,
     effort_level: effortLevel,
     notes,
+    duration_minutes: durationMinutes,
     completed: true,
     logged_at: new Date().toISOString(),
   };

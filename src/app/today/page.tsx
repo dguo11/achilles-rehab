@@ -86,7 +86,7 @@ export default async function TodayPage() {
 
   const { data: logs } = await supabase
     .from("session_logs")
-    .select("id, daily_plan_entry_id, completed, pain_level, effort_level, notes")
+    .select("id, daily_plan_entry_id, completed, pain_level, effort_level, notes, duration_minutes")
     .eq("user_id", user.id)
     .eq("plan_date", planDate);
 
@@ -149,6 +149,7 @@ export default async function TodayPage() {
           painLevel: summaryLog?.pain_level ?? null,
           effortLevel: summaryLog?.effort_level ?? null,
           notes: summaryLog?.notes ?? null,
+          durationMinutes: summaryLog?.duration_minutes ?? null,
         }}
       />
 

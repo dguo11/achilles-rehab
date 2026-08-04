@@ -11,7 +11,12 @@ export function SessionSummaryForm({
   initial,
 }: {
   planDate: string;
-  initial: { painLevel: number | null; effortLevel: number | null; notes: string | null };
+  initial: {
+    painLevel: number | null;
+    effortLevel: number | null;
+    notes: string | null;
+    durationMinutes: number | null;
+  };
 }) {
   const [state, formAction, pending] = useActionState(submitSessionSummaryAction, initialState);
   const [pain, setPain] = useState<number | null>(initial.painLevel);
@@ -23,6 +28,18 @@ export function SessionSummaryForm({
       <h2 className="text-lg font-semibold">How did today go?</h2>
       <ScalePicker name="painLevel" value={pain} onChange={setPain} label="Pain (0 = none, 10 = worst)" />
       <ScalePicker name="effortLevel" value={effort} onChange={setEffort} label="Effort (0 = none, 10 = max)" />
+      <label className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium">Duration in minutes (optional — used for .fit export)</span>
+        <input
+          type="number"
+          name="durationMinutes"
+          inputMode="numeric"
+          min={0}
+          max={600}
+          defaultValue={initial.durationMinutes ?? ""}
+          className="min-h-14 rounded-xl border-2 border-neutral-300 px-4 text-lg dark:border-neutral-700 dark:bg-neutral-900"
+        />
+      </label>
       <label className="flex flex-col gap-1.5">
         <span className="text-sm font-medium">Notes (optional)</span>
         <textarea
