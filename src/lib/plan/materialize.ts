@@ -153,7 +153,7 @@ export async function ensureTodayEntries({
           protocol_phase_id: phaseId,
           plan_date: planDate,
           exercise_name: ex.name,
-          exercise_category: "strength",
+          exercise_category: ex.targetArea,
           suggested_sets: ex.sets,
           suggested_reps: ex.reps,
           suggested_frequency: ex.frequency,
