@@ -129,10 +129,28 @@ export async function confirmProtocolAction(
       .eq("user_id", user.id);
   }
 
+  // First-time "upload your own protocol" (chosen at intake) never gets a
+  // user_protocol_selections row until this confirmation, so there's no
+  // existingSelection to carry an anchor date forward from — fall back to
+  // the injury/surgery date the user already gave at intake, never
+  // today's date, which would silently shift every phase's timing.
+  let anchorDate = existingSelection?.anchor_date ?? null;
+  if (!anchorDate) {
+    const { data: intake } = await supabase
+      .from("intake_responses")
+      .select("injury_date")
+      .eq("user_id", user.id)
+      .is("superseded_at", null)
+      .order("submitted_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    anchorDate = intake?.injury_date ?? todayIso();
+  }
+
   await supabase.from("user_protocol_selections").insert({
     user_id: user.id,
     protocol_id: protocolId,
-    anchor_date: existingSelection?.anchor_date ?? todayIso(),
+    anchor_date: anchorDate,
     current_phase_order_index: 0,
     status: "draft_pending_review",
   });
