@@ -221,7 +221,7 @@ export default async function TodayPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Rest of body</h2>
+        <h2 className="text-lg font-semibold">Full-Body Fitness</h2>
 
         {customEntries.length > 0 ? (
           <>
@@ -272,7 +272,7 @@ export default async function TodayPage() {
           />
         ) : (
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            No rest-of-body exercises listed for this phase.
+            No Full-Body Fitness exercises listed for this phase.
           </p>
         )}
       </section>

@@ -187,9 +187,9 @@ export default async function PlanReviewPage() {
 
       <section className="flex flex-col gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
-          3 · Rest of body exercises
+          3 · Full-Body Fitness
         </p>
-        <h2 className="text-lg font-semibold">Everything else</h2>
+        <h2 className="text-lg font-semibold">Hip, core, cardio &amp; more</h2>
         <ExercisePlanList exercisePlan={snapshot.exercisePlan} region="rest_of_body" />
       </section>
 

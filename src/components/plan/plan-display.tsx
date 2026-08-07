@@ -134,7 +134,7 @@ export function ExercisePlanList({
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
         {region === "achilles"
           ? "No ankle/Achilles-specific exercises listed for this phase — follow the goals and guidance above, and check in with your PT for a home program."
-          : "No other-body exercises listed for this phase."}
+          : "No Full-Body Fitness exercises listed for this phase."}
       </p>
     );
   }

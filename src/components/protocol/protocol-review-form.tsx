@@ -339,7 +339,7 @@ export function ProtocolReviewForm({
 
             <div className="mt-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
               <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                3 — Rest of body exercises
+                3 — Full-Body Fitness
               </p>
             </div>
             <label className="flex flex-col gap-1.5">
