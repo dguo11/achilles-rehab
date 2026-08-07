@@ -18,7 +18,23 @@ export default async function ProtocolUploadPage() {
     .limit(1)
     .maybeSingle();
 
-  if (!existingSelection) redirect("/onboarding/intake");
+  if (!existingSelection) {
+    // Reachable without a selection yet if the user just picked "upload
+    // your own protocol" at intake — that path defers protocol creation
+    // to this flow instead of resolving a built-in protocol id.
+    const { data: latestIntake } = await supabase
+      .from("intake_responses")
+      .select("protocol_preference")
+      .eq("user_id", user.id)
+      .is("superseded_at", null)
+      .order("submitted_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (latestIntake?.protocol_preference !== "upload_own") {
+      redirect("/onboarding/intake");
+    }
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 py-8">

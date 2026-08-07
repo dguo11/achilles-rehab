@@ -26,9 +26,9 @@ import { checkForDistressSignals, SUPPORTIVE_DISTRESS_MESSAGE } from "@/lib/safe
 import { submitIntakeAction, type IntakeActionState } from "@/app/onboarding/intake/actions";
 
 type InjuryType = "surgical" | "non_surgical" | "not_sure";
-type ProtocolPreference = "mgb" | "willits" | "not_sure";
+type ProtocolPreference = "mgb" | "willits" | "upload_own" | "not_sure";
 
-type Answers = {
+export type Answers = {
   injuryType: InjuryType | null;
   anchorDate: string;
   side: "left" | "right" | null;
@@ -182,11 +182,21 @@ function StepShell({
   );
 }
 
-export function IntakeWizard() {
-  const [step, setStep] = useState("injury-type");
+export function IntakeWizard({
+  initialAnswers: initialAnswersProp,
+  submitAction = submitIntakeAction,
+  startStep = "injury-type",
+  submitLabel,
+}: {
+  initialAnswers?: Partial<Answers>;
+  submitAction?: (prevState: IntakeActionState, formData: FormData) => Promise<IntakeActionState>;
+  startStep?: string;
+  submitLabel?: string;
+} = {}) {
+  const [step, setStep] = useState(startStep);
   const [, setHistory] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<Answers>(initialAnswers);
-  const [state, formAction, pending] = useActionState(submitIntakeAction, initialActionState);
+  const [answers, setAnswers] = useState<Answers>({ ...initialAnswers, ...initialAnswersProp });
+  const [state, formAction, pending] = useActionState(submitAction, initialActionState);
 
   function goTo(next: string) {
     setHistory((h) => [...h, step]);
@@ -483,21 +493,42 @@ export function IntakeWizard() {
   if (step === "protocol") {
     return (
       <StepShell title="Which protocol is your surgeon or PT using?">
+        <OptionButton
+          selected={answers.protocolPreference === "willits"}
+          onClick={() => {
+            setAnswers((a) => ({ ...a, protocolPreference: "willits", resolvedProtocolId: "willits-accelerated" }));
+            goTo("fitness");
+          }}
+        >
+          Willits (accelerated functional)
+        </OptionButton>
         {answers.injuryType === "surgical" && (
           <OptionButton
             selected={answers.protocolPreference === "mgb"}
-            onClick={() => { update("protocolPreference", "mgb"); update("resolvedProtocolId", "mgb-achilles-repair"); goTo("fitness"); }}
+            onClick={() => {
+              setAnswers((a) => ({ ...a, protocolPreference: "mgb", resolvedProtocolId: "mgb-achilles-repair" }));
+              goTo("fitness");
+            }}
           >
             Mass General Brigham
           </OptionButton>
         )}
         <OptionButton
-          selected={answers.protocolPreference === "willits"}
-          onClick={() => { update("protocolPreference", "willits"); update("resolvedProtocolId", "willits-accelerated"); goTo("fitness"); }}
+          selected={answers.protocolPreference === "upload_own"}
+          onClick={() => {
+            setAnswers((a) => ({ ...a, protocolPreference: "upload_own", resolvedProtocolId: null }));
+            goTo("fitness");
+          }}
         >
-          Willits (accelerated functional)
+          Upload your own protocol
         </OptionButton>
-        <OptionButton selected={answers.protocolPreference === "not_sure"} onClick={() => { update("protocolPreference", "not_sure"); goTo("protocol-explainer"); }}>
+        <OptionButton
+          selected={answers.protocolPreference === "not_sure"}
+          onClick={() => {
+            setAnswers((a) => ({ ...a, protocolPreference: "not_sure", resolvedProtocolId: null }));
+            goTo("protocol-explainer");
+          }}
+        >
           Not sure
         </OptionButton>
       </StepShell>
@@ -728,7 +759,7 @@ export function IntakeWizard() {
       if (answers.ageRange) fd.set("ageRange", answers.ageRange);
       answers.conservativeFactors.forEach((f) => fd.append("conservativeFactors", f));
       fd.set("protocolPreference", answers.protocolPreference ?? "");
-      fd.set("resolvedProtocolId", answers.resolvedProtocolId ?? "");
+      if (answers.resolvedProtocolId) fd.set("resolvedProtocolId", answers.resolvedProtocolId);
     }
     answers.currentMobilityAids.forEach((a) => fd.append("currentMobilityAids", a));
     if (answers.currentBootWedgeCount) fd.set("currentBootWedgeCount", answers.currentBootWedgeCount);
@@ -772,7 +803,11 @@ export function IntakeWizard() {
         {!isUndecided && (
           <div>
             <dt className="font-medium text-neutral-500 dark:text-neutral-400">Protocol</dt>
-            <dd>{protocol?.label}</dd>
+            <dd>
+              {answers.protocolPreference === "upload_own"
+                ? "Upload your own — you'll be taken there next"
+                : protocol?.label}
+            </dd>
           </div>
         )}
         {answers.fitnessLevel && (
@@ -804,7 +839,11 @@ export function IntakeWizard() {
       )}
 
       <div className="flex-1" />
-      <NextButton disabled={pending} onClick={handleSubmit} label={pending ? "Saving…" : "Submit"} />
+      <NextButton
+        disabled={pending}
+        onClick={handleSubmit}
+        label={pending ? "Saving…" : (submitLabel ?? "Submit")}
+      />
     </StepShell>
   );
 }

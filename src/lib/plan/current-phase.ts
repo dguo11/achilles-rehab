@@ -8,7 +8,9 @@ export type PhaseRow = {
   timeframe_end_days: number | null;
   goals: unknown;
   weight_bearing: unknown;
-  interventions: unknown;
+  gait_training: unknown;
+  achilles_interventions: unknown;
+  rest_of_body_interventions: unknown;
   criteria_to_progress: unknown;
   criteria_to_discharge: unknown;
   continues_from_order_indexes: number[] | null;

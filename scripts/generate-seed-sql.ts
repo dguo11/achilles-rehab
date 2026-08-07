@@ -19,6 +19,9 @@ type Phase = {
   weightBearing?: unknown;
   assistiveDevices?: string[];
   interventions: Record<string, unknown>;
+  achillesInterventions?: Record<string, unknown>;
+  restOfBodyInterventions?: Record<string, unknown>;
+  gaitTraining?: string[] | null;
   criteriaToProgress?: string[];
   criteriaToDischarge?: string[];
   continuesFromOrderIndexes?: number[];
@@ -102,7 +105,7 @@ for (const protocol of seed.protocols) {
 
   for (const phase of protocol.phases) {
     lines.push(
-      `insert into public.protocol_phases (protocol_id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices)`,
+      `insert into public.protocol_phases (protocol_id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, achilles_interventions, rest_of_body_interventions, gait_training, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices)`,
       `values (`,
       `  ${sqlString(protocol.id)},`,
       `  ${phase.orderIndex},`,
@@ -114,6 +117,9 @@ for (const protocol of seed.protocols) {
       `  ${sqlJsonb(phase.goals ?? [])},`,
       `  ${sqlJsonb(phase.weightBearing ?? null)},`,
       `  ${sqlJsonb(phase.interventions ?? {})},`,
+      `  ${sqlJsonb(phase.achillesInterventions ?? {})},`,
+      `  ${sqlJsonb(phase.restOfBodyInterventions ?? {})},`,
+      `  ${sqlJsonb(phase.gaitTraining ?? null)},`,
       `  ${sqlJsonb(phase.criteriaToProgress ?? null)},`,
       `  ${sqlJsonb(phase.criteriaToDischarge ?? null)},`,
       `  ${sqlIntArrayOrNull(phase.continuesFromOrderIndexes)},`,

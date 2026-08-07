@@ -5,6 +5,7 @@ import { PlanAcknowledgeForm } from "@/components/plan/plan-acknowledge-form";
 import {
   AssistiveDevicesList,
   ExercisePlanList,
+  GaitTrainingList,
   GoalsList,
   RedFlagsCard,
   WeightBearingDisplay,
@@ -15,7 +16,7 @@ import type { Database } from "@/lib/supabase/database.types";
 import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protocol-badge";
 
 const PHASE_COLUMNS =
-  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
+  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, gait_training, achilles_interventions, rest_of_body_interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
 
 export default async function PlanReviewPage() {
   const supabase = await createClient();
@@ -69,6 +70,7 @@ export default async function PlanReviewPage() {
     .from("intake_responses")
     .select("fitness_level, exercise_frequency, recovery_goal, current_weight_bearing_status")
     .eq("user_id", user.id)
+    .is("superseded_at", null)
     .order("submitted_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -150,23 +152,45 @@ export default async function PlanReviewPage() {
       )}
 
       <section className="flex flex-col gap-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+          0 · Phase summary &amp; goal
+        </p>
         <h2 className="text-lg font-semibold">Goals for this phase</h2>
         <GoalsList goals={snapshot.phase.goals} />
       </section>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Weight-bearing</h2>
-        <WeightBearingDisplay weightBearing={snapshot.phase.weightBearing} />
+      <section className="flex flex-col gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+          1 · Weight-bearing status &amp; gait training
+        </p>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Weight-bearing</h2>
+          <WeightBearingDisplay weightBearing={snapshot.phase.weightBearing} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Assistive devices</h3>
+          <AssistiveDevicesList devices={snapshot.phase.assistiveDevices} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Gait training</h3>
+          <GaitTrainingList gaitTraining={snapshot.phase.gaitTraining} />
+        </div>
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Assistive devices for this phase</h2>
-        <AssistiveDevicesList devices={snapshot.phase.assistiveDevices} />
+        <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+          2 · Achilles rehab &amp; exercises
+        </p>
+        <h2 className="text-lg font-semibold">Ankle / Achilles / calf exercises</h2>
+        <ExercisePlanList exercisePlan={snapshot.exercisePlan} region="achilles" />
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Suggested exercises</h2>
-        <ExercisePlanList exercisePlan={snapshot.exercisePlan} />
+        <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+          3 · Rest of body exercises
+        </p>
+        <h2 className="text-lg font-semibold">Everything else</h2>
+        <ExercisePlanList exercisePlan={snapshot.exercisePlan} region="rest_of_body" />
       </section>
 
       <RedFlagsCard redFlags={snapshot.redFlags} />

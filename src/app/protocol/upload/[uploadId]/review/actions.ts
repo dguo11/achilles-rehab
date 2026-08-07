@@ -7,6 +7,21 @@ import type { Database } from "@/lib/supabase/database.types";
 
 export type ConfirmActionState = { error?: string; ok?: boolean };
 
+// Merges the two region-tagged intervention groups into the single flat
+// legacy `interventions` shape, concatenating rather than overwriting when
+// both buckets use the same category name (e.g. "strengthening" split
+// across both regions).
+function mergeInterventions(
+  a: Record<string, string[]>,
+  b: Record<string, string[]>,
+): Record<string, string[]> {
+  const merged: Record<string, string[]> = {};
+  for (const [category, items] of [...Object.entries(a), ...Object.entries(b)]) {
+    merged[category] = [...(merged[category] ?? []), ...items];
+  }
+  return merged;
+}
+
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -75,7 +90,10 @@ export async function confirmProtocolAction(
     timeframe_end_days: p.timeframeEndDays,
     goals: p.goals,
     weight_bearing: p.weightBearing,
-    interventions: p.interventions,
+    gait_training: p.gaitTraining,
+    achilles_interventions: p.achillesInterventions,
+    rest_of_body_interventions: p.restOfBodyInterventions,
+    interventions: mergeInterventions(p.achillesInterventions, p.restOfBodyInterventions),
     criteria_to_progress: p.criteriaToProgress,
   }));
   const { error: phasesError } = await supabase.from("protocol_phases").insert(phaseRows);

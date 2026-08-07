@@ -19,6 +19,7 @@ export async function SiteHeader() {
           <Link href="/notes">Notes</Link>
           <Link href="/history">History</Link>
           <Link href="/calendar">Calendar</Link>
+          <Link href="/profile">Profile</Link>
         </nav>
       </div>
       <div className="flex items-center gap-3">

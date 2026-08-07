@@ -10,7 +10,7 @@ import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protocol-badge";
 
 const PHASE_COLUMNS =
-  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
+  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, gait_training, achilles_interventions, rest_of_body_interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);

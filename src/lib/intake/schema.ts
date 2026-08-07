@@ -113,18 +113,18 @@ export const CONSERVATIVE_FACTORS = [
 
 export const PROTOCOL_OPTIONS = [
   {
-    id: "mgb-achilles-repair",
-    label: "Mass General Brigham",
-    appliesTo: ["surgical"],
-    description:
-      "A detailed, criterion-and-time-based protocol with numbered phases I–VII, plus structured return-to-running and agility/plyometric programs. Surgical patients only.",
-  },
-  {
     id: "willits-accelerated",
     label: "Willits (accelerated functional)",
     appliesTo: ["surgical", "non_surgical"],
     description:
       "A simpler, purely time-based protocol used for both surgical and non-surgical recovery.",
+  },
+  {
+    id: "mgb-achilles-repair",
+    label: "Mass General Brigham",
+    appliesTo: ["surgical"],
+    description:
+      "A detailed, criterion-and-time-based protocol with numbered phases I–VII, plus structured return-to-running and agility/plyometric programs. Surgical patients only.",
   },
 ] as const;
 
@@ -167,8 +167,8 @@ export const intakeSchema = z
     ageRange: z.enum(["under_40", "40_59", "60_plus"]).optional(),
     conservativeFactors: z.array(z.string()).default([]),
 
-    protocolPreference: z.enum(["mgb", "willits", "not_sure"]),
-    resolvedProtocolId: z.enum(["mgb-achilles-repair", "willits-accelerated"]),
+    protocolPreference: z.enum(["mgb", "willits", "upload_own", "not_sure"]),
+    resolvedProtocolId: z.enum(["mgb-achilles-repair", "willits-accelerated"]).optional(),
 
     fitnessLevel: z.enum(FITNESS_LEVELS.map((f) => f.value) as [string, ...string[]]),
     priorSports: z.array(z.string()).default([]),
@@ -187,6 +187,9 @@ export const intakeSchema = z
   })
   .refine(
     (data) => {
+      // "Upload your own" defers protocol resolution to the separate
+      // /protocol/upload review flow — no built-in protocol is chosen here.
+      if (data.protocolPreference === "upload_own") return true;
       const protocol = PROTOCOL_OPTIONS.find((p) => p.id === data.resolvedProtocolId);
       return !!protocol && protocolAppliesToInjuryType(protocol, data.injuryType);
     },

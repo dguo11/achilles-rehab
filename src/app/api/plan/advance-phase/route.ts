@@ -6,7 +6,7 @@ import type { PhaseRow } from "@/lib/plan/current-phase";
 import type { Database } from "@/lib/supabase/database.types";
 
 const PHASE_COLUMNS =
-  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
+  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, gait_training, achilles_interventions, rest_of_body_interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
 
 /**
  * Advances a user to the next protocol phase. Distinct from the initial
@@ -96,6 +96,7 @@ export async function POST(request: Request) {
     .from("intake_responses")
     .select("fitness_level, exercise_frequency, recovery_goal, current_weight_bearing_status")
     .eq("user_id", user.id)
+    .is("superseded_at", null)
     .order("submitted_at", { ascending: false })
     .limit(1)
     .maybeSingle();

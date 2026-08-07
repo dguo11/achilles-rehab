@@ -6,7 +6,7 @@ import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protoc
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
 
 const PHASE_COLUMNS =
-  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
+  "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, gait_training, achilles_interventions, rest_of_body_interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
 
 export default async function AdvancePhasePage() {
   const supabase = await createClient();

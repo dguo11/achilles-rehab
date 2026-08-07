@@ -51,6 +51,24 @@ export function WeightBearingDisplay({ weightBearing }: { weightBearing: unknown
   return null;
 }
 
+export function GaitTrainingList({ gaitTraining }: { gaitTraining: unknown }) {
+  const list = asStringList(gaitTraining);
+  if (list.length === 0) {
+    return (
+      <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        No specific gait-training guidance called out for this phase.
+      </p>
+    );
+  }
+  return (
+    <ul className="list-disc space-y-1 pl-5 text-sm text-neutral-700 dark:text-neutral-300">
+      {list.map((g) => (
+        <li key={g}>{g}</li>
+      ))}
+    </ul>
+  );
+}
+
 export function AssistiveDevicesList({ devices }: { devices: unknown }) {
   const list = asStringList(devices);
   if (list.length === 0) return null;
@@ -102,18 +120,27 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-export function ExercisePlanList({ exercisePlan }: { exercisePlan: PlanSnapshot["exercisePlan"] }) {
-  if (exercisePlan.length === 0) {
+export function ExercisePlanList({
+  exercisePlan,
+  region,
+}: {
+  exercisePlan: PlanSnapshot["exercisePlan"];
+  region: "achilles" | "rest_of_body";
+}) {
+  const forRegion = exercisePlan.filter((ex) => ex.region === region);
+
+  if (forRegion.length === 0) {
     return (
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
-        This phase doesn&apos;t list specific exercises in the protocol — follow the goals and
-        guidance above, and check in with your PT for a home program.
+        {region === "achilles"
+          ? "No ankle/Achilles-specific exercises listed for this phase — follow the goals and guidance above, and check in with your PT for a home program."
+          : "No other-body exercises listed for this phase."}
       </p>
     );
   }
 
   const grouped = new Map<string, typeof exercisePlan>();
-  for (const ex of exercisePlan) {
+  for (const ex of forRegion) {
     const list = grouped.get(ex.category) ?? [];
     list.push(ex);
     grouped.set(ex.category, list);

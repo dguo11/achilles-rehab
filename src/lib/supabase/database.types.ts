@@ -232,6 +232,7 @@ export type Database = {
           severity: string | null
           side: string
           submitted_at: string
+          superseded_at: string | null
           surgery_date: string | null
           tendon_augmentation: string | null
           user_id: string
@@ -268,6 +269,7 @@ export type Database = {
           severity?: string | null
           side: string
           submitted_at?: string
+          superseded_at?: string | null
           surgery_date?: string | null
           tendon_augmentation?: string | null
           user_id: string
@@ -304,6 +306,7 @@ export type Database = {
           severity?: string | null
           side?: string
           submitted_at?: string
+          superseded_at?: string | null
           surgery_date?: string | null
           tendon_augmentation?: string | null
           user_id?: string
@@ -371,10 +374,12 @@ export type Database = {
       }
       protocol_phases: {
         Row: {
+          achilles_interventions: Json
           assistive_devices: Json | null
           continues_from_order_indexes: number[] | null
           criteria_to_discharge: Json | null
           criteria_to_progress: Json | null
+          gait_training: Json | null
           goals: Json
           id: string
           interventions: Json
@@ -382,16 +387,19 @@ export type Database = {
           number: number | null
           order_index: number
           protocol_id: string
+          rest_of_body_interventions: Json
           timeframe_end_days: number | null
           timeframe_label: string
           timeframe_start_days: number | null
           weight_bearing: Json | null
         }
         Insert: {
+          achilles_interventions?: Json
           assistive_devices?: Json | null
           continues_from_order_indexes?: number[] | null
           criteria_to_discharge?: Json | null
           criteria_to_progress?: Json | null
+          gait_training?: Json | null
           goals?: Json
           id?: string
           interventions?: Json
@@ -399,16 +407,19 @@ export type Database = {
           number?: number | null
           order_index: number
           protocol_id: string
+          rest_of_body_interventions?: Json
           timeframe_end_days?: number | null
           timeframe_label: string
           timeframe_start_days?: number | null
           weight_bearing?: Json | null
         }
         Update: {
+          achilles_interventions?: Json
           assistive_devices?: Json | null
           continues_from_order_indexes?: number[] | null
           criteria_to_discharge?: Json | null
           criteria_to_progress?: Json | null
+          gait_training?: Json | null
           goals?: Json
           id?: string
           interventions?: Json
@@ -416,6 +427,7 @@ export type Database = {
           number?: number | null
           order_index?: number
           protocol_id?: string
+          rest_of_body_interventions?: Json
           timeframe_end_days?: number | null
           timeframe_label?: string
           timeframe_start_days?: number | null

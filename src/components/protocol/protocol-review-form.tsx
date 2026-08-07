@@ -14,9 +14,15 @@ type PhaseFormState = {
   timeframeEndDays: string;
   goalsText: string;
   weightBearing: string;
-  interventionsText: string;
+  gaitTrainingText: string;
+  achillesInterventionsText: string;
+  restOfBodyInterventionsText: string;
   criteriaText: string;
 };
+
+function interventionsToText(groups: ExtractedPhase["achillesInterventions"] | undefined): string {
+  return (groups ?? []).map((c) => `${c.category}: ${c.items.join(", ")}`).join("\n");
+}
 
 function phaseToFormState(p?: ExtractedPhase): PhaseFormState {
   return {
@@ -26,7 +32,9 @@ function phaseToFormState(p?: ExtractedPhase): PhaseFormState {
     timeframeEndDays: p?.timeframeEndDays != null ? String(p.timeframeEndDays) : "",
     goalsText: (p?.goals ?? []).join("\n"),
     weightBearing: p?.weightBearing ?? "",
-    interventionsText: (p?.interventions ?? []).map((c) => `${c.category}: ${c.items.join(", ")}`).join("\n"),
+    gaitTrainingText: (p?.gaitTraining ?? []).join("\n"),
+    achillesInterventionsText: interventionsToText(p?.achillesInterventions),
+    restOfBodyInterventionsText: interventionsToText(p?.restOfBodyInterventions),
     criteriaText: (p?.criteriaToProgress ?? []).join("\n"),
   };
 }
@@ -119,7 +127,9 @@ export function ProtocolReviewForm({
         timeframeEndDays: p.timeframeEndDays.trim() ? Number(p.timeframeEndDays) : null,
         goals: linesToArray(p.goalsText),
         weightBearing: p.weightBearing.trim() || null,
-        interventions: parseInterventionsText(p.interventionsText),
+        gaitTraining: linesToArray(p.gaitTrainingText).length > 0 ? linesToArray(p.gaitTrainingText) : null,
+        achillesInterventions: parseInterventionsText(p.achillesInterventionsText),
+        restOfBodyInterventions: parseInterventionsText(p.restOfBodyInterventionsText),
         criteriaToProgress: linesToArray(p.criteriaText).length > 0 ? linesToArray(p.criteriaText) : null,
       })),
     };
@@ -265,17 +275,11 @@ export function ProtocolReviewForm({
               </label>
             </div>
 
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium">Weight-bearing rule</span>
-              <textarea
-                className={textareaClass}
-                rows={2}
-                value={phase.weightBearing}
-                onChange={(e) => updatePhase(i, { weightBearing: e.target.value })}
-                placeholder="e.g. Non-weight-bearing, crutches"
-              />
-            </label>
-
+            <div className="mt-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                0 — Phase summary &amp; goal
+              </p>
+            </div>
             <label className="flex flex-col gap-1.5">
               <span className="text-sm font-medium">Goals</span>
               <span className="text-xs text-neutral-500 dark:text-neutral-400">One per line.</span>
@@ -287,17 +291,68 @@ export function ProtocolReviewForm({
               />
             </label>
 
+            <div className="mt-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                1 — Weight-bearing status &amp; gait training
+              </p>
+            </div>
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium">Exercises</span>
+              <span className="text-sm font-medium">Weight-bearing rule</span>
+              <textarea
+                className={textareaClass}
+                rows={2}
+                value={phase.weightBearing}
+                onChange={(e) => updatePhase(i, { weightBearing: e.target.value })}
+                placeholder="e.g. Non-weight-bearing, crutches"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium">Gait training (optional)</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">One per line.</span>
+              <textarea
+                className={textareaClass}
+                rows={2}
+                value={phase.gaitTrainingText}
+                onChange={(e) => updatePhase(i, { gaitTrainingText: e.target.value })}
+                placeholder="e.g. Normalize gait in boot using a shoe leveler"
+              />
+            </label>
+
+            <div className="mt-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                2 — Achilles rehab &amp; exercises
+              </p>
+            </div>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium">Ankle / Achilles / calf exercises</span>
               <span className="text-xs text-neutral-500 dark:text-neutral-400">
                 One category per line, as &quot;Category: exercise 1, exercise 2&quot;.
               </span>
               <textarea
                 className={textareaClass}
                 rows={4}
-                value={phase.interventionsText}
-                onChange={(e) => updatePhase(i, { interventionsText: e.target.value })}
+                value={phase.achillesInterventionsText}
+                onChange={(e) => updatePhase(i, { achillesInterventionsText: e.target.value })}
                 placeholder="Range of motion: ankle pumps, alphabet tracing"
+              />
+            </label>
+
+            <div className="mt-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                3 — Rest of body exercises
+              </p>
+            </div>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium">Everything else (hip, knee, core, cardio, etc.)</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                One category per line, as &quot;Category: exercise 1, exercise 2&quot;.
+              </span>
+              <textarea
+                className={textareaClass}
+                rows={4}
+                value={phase.restOfBodyInterventionsText}
+                onChange={(e) => updatePhase(i, { restOfBodyInterventionsText: e.target.value })}
+                placeholder="Strengthening: quad sets, hip abduction"
               />
             </label>
 

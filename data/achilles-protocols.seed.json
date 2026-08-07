@@ -3,8 +3,9 @@
     "purpose": "Ground-truth seed data for the Achilla rehab app. Both protocols were transcribed from the source PDFs the user provided. This is the clinical backbone the app schedules and tracks against.",
     "IMPORTANT": "A licensed clinician (PT/surgeon) MUST verify this data against the original source PDFs before any patient-facing use. Timelines, weight-bearing rules, and progression criteria are safety-critical. Treat the PDFs as the source of truth; this file is a convenience transcription and may contain transcription errors.",
     "disclaimer": "This app is a rehab support tool, not a medical device, and does not replace advice from a user's surgeon or physical therapist.",
-    "schemaNotes": "Each protocol has phases. Phases are gated by timeframe AND, for time_and_criterion protocols, by criteriaToProgress. weightBearing describes the allowed loading. interventions group exercises by category. Supporting programs (return-to-run, agility/plyo) are unlocked by functional-assessment thresholds. timeframeStartDays/timeframeEndDays are approximate day offsets from the user's anchor date (surgery date for surgical, injury date for non-surgical), used only to suggest the current phase for scheduling — never to silently auto-advance a time_and_criterion protocol past its criteriaToProgress.",
+    "schemaNotes": "Each protocol has phases. Phases are gated by timeframe AND, for time_and_criterion protocols, by criteriaToProgress. weightBearing describes the allowed loading. interventions groups exercises by category exactly as originally transcribed (legacy, kept as a raw record). achillesInterventions/restOfBodyInterventions split those same items — unchanged wording — into the two body-region buckets used by the app's phase summary UI; gaitTraining pulls out gait-specific guidance for display alongside weightBearing. Supporting programs (return-to-run, agility/plyo) are unlocked by functional-assessment thresholds. timeframeStartDays/timeframeEndDays are approximate day offsets from the user's anchor date (surgery date for surgical, injury date for non-surgical), used only to suggest the current phase for scheduling — never to silently auto-advance a time_and_criterion protocol past its criteriaToProgress.",
     "weightBearingTerminology": "'Protected weight-bearing' (partial load, crutches required), 'weight-bearing as tolerated' / WBAT (progressing load, may still involve crutches or a cane per the patient's tolerance), and 'full weight-bearing' (no assistive device needed for gait) are three distinct clinical terms used across these protocols. They are kept verbatim per phase and must never be treated as equivalent or collapsed into one another — e.g. a phase whose weightBearing says 'weight-bearing as tolerated' should not be read as 'no more crutches,' and only a phase that actually says or clearly implies full weight-bearing should be treated as such.",
+    "regionSplitMethod": "achillesInterventions/restOfBodyInterventions were derived by hand from the interventions transcription (not re-derived from the source PDFs), splitting each category's items — verbatim, never reworded — by which body region the exercise targets. Rule of thumb: romMobility/strengthening/balanceProprioception/proprioception/plyometrics/plyometricsAgility/running items go to achillesInterventions unless the item text is explicitly proximal/non-ankle (e.g. 'no ankle involvement', hip/knee/core/hamstring/upper-body work), in which case they go to restOfBodyInterventions; cardio defaults to restOfBodyInterventions unless the item is ankle-isolated; modalities default to achillesInterventions (local surgical-site/incision care); generic carryover categories (note, other, progression) default to restOfBodyInterventions since they aren't region-specific. gaitTraining collects any goal/criterion/intervention text that explicitly mentions gait. This is an Achilla-added organizational layer for display only — it does not change, add, or remove any clinical content from interventions.",
     "correctionsFromRawTranscription": [
       "Willits '>12 weeks' weightBearing: the source table (Table E-1) never states 'Full weight-bearing' verbatim for this row — it's a reasonable inference, since crutches/cane are already being weaned off by the prior 8-12 week row, but it is not a quoted clinical rule. Marked with inferred: true and kept distinct from the verbatim 'weight-bearing as tolerated' wording used in the 4-6 and 6-8 week rows.",
       "Willits protocol has no red-flag / 'call your doctor' guidance in its source (it's a research-paper timeline table, not a clinical handout), unlike MGB which has an explicit one. Added Achilla's baseline post-op safety list, tagged source: 'achilla-baseline' (not attributed to Willits itself) rather than inventing Willits-specific guidance."
@@ -49,6 +50,12 @@
             "romMobility": ["Supine passive hamstring stretch (in boot/splint)"],
             "strengthening": ["Quad sets", "Straight leg raise", "Abdominal bracing", "Hip abduction", "Clamshell", "Prone hip extension", "Prone hamstring curls (all in boot/splint)"]
           },
+          "achillesInterventions": {},
+          "restOfBodyInterventions": {
+            "romMobility": ["Supine passive hamstring stretch (in boot/splint)"],
+            "strengthening": ["Quad sets", "Straight leg raise", "Abdominal bracing", "Hip abduction", "Clamshell", "Prone hip extension", "Prone hamstring curls (all in boot/splint)"]
+          },
+          "gaitTraining": null,
           "criteriaToProgress": ["Pain < 5/10"]
         },
         {
@@ -93,6 +100,29 @@
             ],
             "proprioception": ["Joint position re-training"]
           },
+          "achillesInterventions": {
+            "romMobility": [
+              "Initiate ankle PROM/AAROM/AROM — DO NOT dorsiflex past 0° (neutral)",
+              "Ankle pumps (no DF beyond neutral)",
+              "Ankle circles (no DF beyond neutral)",
+              "Ankle inversion",
+              "Ankle eversion",
+              "Seated heel-slides for DF ROM (not past 0°)",
+              "If stiff: great toe DF/PF stretching (do not exceed neutral DF at ankle)",
+              "Foot/ankle joint mobilizations per therapist discretion (avoid pressure on healing incision)",
+              "Gentle scar mobilization once incision healed — NO IASTM directly on tendon until at least 16 weeks post-op"
+            ],
+            "strengthening": ["Once able to sit with foot flat and ankle near neutral DF: seated heel raises, seated arch doming, foot intrinsic muscle exercises"],
+            "proprioception": ["Joint position re-training"]
+          },
+          "restOfBodyInterventions": {
+            "cardio": ["Upper body ergometer"],
+            "strengthening": ["Continue proximal lower-extremity strengthening (Phase I)", "Lumbopelvic: planks (in Achilles boot)"]
+          },
+          "gaitTraining": [
+            "Normalize gait in boot using a Shoe Leveler on the uninvolved side",
+            "Optimal gait in Achilles boot with 1 wedge, crutches, and Shoe Leveler"
+          ],
           "criteriaToProgress": [
             "Pain < 3/10",
             "Minimal swelling (e.g., Figure-8 or volumetric measure)",
@@ -137,6 +167,25 @@
               "Gym: hip abductor/adductor machine, hip extension machine, roman chair — progress intensity and duration"
             ]
           },
+          "achillesInterventions": {
+            "romMobility": [
+              "Continue seated heel-slides for DF (DF no longer restricted — progress gently)",
+              "Continue toe stretching as needed",
+              "Ankle/foot mobilizations (talocrural, subtalar, midfoot, MTPs)",
+              "No overt calf stretching NWB or WB; calf towel stretch only if DF ROM progression is delayed"
+            ],
+            "strengthening": ["4-way ankle with resistance band"]
+          },
+          "restOfBodyInterventions": {
+            "romMobility": ["Gentle stretching of proximal muscle groups (standing quad, standing hamstring, kneeling hip flexor, piriformis)"],
+            "cardio": ["Stationary bicycle (in Achilles boot)"],
+            "strengthening": ["Lumbopelvic: bridges on physioball, bridge with roll-in, alternating", "Gym: hip abductor/adductor machine, hip extension machine, roman chair — progress intensity and duration"]
+          },
+          "gaitTraining": [
+            "Normalize gait in Achilles boot without wedges using a Shoe Leveler",
+            "FWB in boot without wedges, without crutches, normalized gait by week 8",
+            "Normal gait in boot without wedges or crutches"
+          ],
           "criteriaToProgress": [
             "No swelling/pain after exercise",
             "Normal gait in boot without wedges or crutches",
@@ -176,6 +225,22 @@
               "Single-limb balance → uneven surface including perturbation training"
             ]
           },
+          "achillesInterventions": {
+            "romMobility": [
+              "Ankle/foot mobilizations as indicated",
+              "Continue seated heel-slides for DF; progress to standing ankle dorsiflexion stretch on a step"
+            ],
+            "strengthening": ["Begin standing calf raise progression: bilateral 25% BW through involved → 50% equal → 75% BW through involved"],
+            "balanceProprioception": [
+              "Double-limb balance on uneven surface (wobble board)",
+              "Single-limb balance → uneven surface including perturbation training"
+            ]
+          },
+          "restOfBodyInterventions": {
+            "cardio": ["Stationary bike", "Flutter-kick swimming / pool jogging (only if incision fully healed)"],
+            "strengthening": ["Gym: seated hamstring curl machine, leg press machine"]
+          },
+          "gaitTraining": ["Normalize gait in supportive sneaker with 1 cm heel lift"],
           "criteriaToProgress": ["No swelling/pain after exercise", "Normal gait in supportive sneaker with 1 cm heel lift"]
         },
         {
@@ -198,6 +263,11 @@
           "interventions": {
             "note": ["Continue to progress ROM, cardio, strengthening, balance, and proprioception from previous phases as indicated"]
           },
+          "achillesInterventions": {},
+          "restOfBodyInterventions": {
+            "note": ["Continue to progress ROM, cardio, strengthening, balance, and proprioception from previous phases as indicated"]
+          },
+          "gaitTraining": ["Normalize gait in supportive sneakers without heel lift", "Wean heel-lift from sneaker; normalize gait pattern"],
           "criteriaToProgress": [
             "No swelling/pain after exercise",
             "Full ROM during standing bilateral concentric calf raise with equal weight-bearing",
@@ -231,6 +301,23 @@
               "With good tolerance → hopping in place bilateral → progress to unilateral"
             ]
           },
+          "achillesInterventions": {
+            "romMobility": ["Continue standing ankle DF mobilization on step", "May initiate gentle IASTM directly to the tendon beginning at 16 weeks"],
+            "strengthening": [
+              "If able to perform bilateral standing heel raises with 75% BW through full range of involved limb → progress to eccentric calf raises (bilateral raise, unilateral lowering on involved) on level surface → unilateral heel raises",
+              "Seated calf machine or wall sit with bilateral calf raises"
+            ],
+            "plyometrics": [
+              "Beginner level. After 3×15 bilateral standing heel raises (equal WB) → rebounding heel raises bilateral stance",
+              "After 3×15 unilateral heel raises → rebounding unilateral heel raises",
+              "With good tolerance → hopping in place bilateral → progress to unilateral"
+            ]
+          },
+          "restOfBodyInterventions": {
+            "cardio": ["Elliptical", "Stair climber"],
+            "strengthening": ["Proximal control: hip hike; forward lunges (lead with injured leg first, then uninjured); lateral lunges; bilateral squat → single-leg progression (partial-WB single-leg press, slide-board lunges retro/lateral, step-ups, step-ups with march, lateral step-ups, step-downs, single-leg squats, single-leg wall slides)"]
+          },
+          "gaitTraining": null,
           "criteriaToProgress": [
             "No swelling/pain after exercise",
             "Standing Heel Rise test > 90% of uninvolved",
@@ -259,6 +346,13 @@
             "running": ["Interval walk/jog program (Return to Running Phase 1)", "Return to Running Program (Phase 2)"],
             "plyometricsAgility": ["Progress to Agility & Plyometric Program once beginner plyos (Phase VI) and RTR Phase 1 completed with good tolerance"]
           },
+          "achillesInterventions": {
+            "romMobility": ["May initiate gentle standing gastroc and soleus stretch as indicated at 6 months post-op"],
+            "running": ["Interval walk/jog program (Return to Running Phase 1)", "Return to Running Program (Phase 2)"],
+            "plyometricsAgility": ["Progress to Agility & Plyometric Program once beginner plyos (Phase VI) and RTR Phase 1 completed with good tolerance"]
+          },
+          "restOfBodyInterventions": {},
+          "gaitTraining": null,
           "criteriaToDischarge": [
             "Clearance from MD AND all milestone criteria met",
             "Completion of both phases of the Return to Running Program without pain/swelling",
@@ -369,7 +463,10 @@
           "timeframeEndDays": 14,
           "weightBearing": "Posterior slab/splint; non-weight-bearing with crutches (immediately post-op for surgical group; after injury for non-operative group).",
           "assistiveDevices": ["posterior slab/splint", "crutches"],
-          "interventions": {}
+          "interventions": {},
+          "achillesInterventions": {},
+          "restOfBodyInterventions": {},
+          "gaitTraining": null
         },
         {
           "orderIndex": 1,
@@ -386,7 +483,17 @@
             "strengthening": ["Knee/hip exercises with no ankle involvement (leg lifts from sitting, prone, or side-lying)"],
             "cardio": ["Non-weight-bearing fitness/cardio: one-leg bicycling, deep-water running"],
             "other": ["Hydrotherapy within motion and weight-bearing limits"]
-          }
+          },
+          "achillesInterventions": {
+            "romMobility": ["Active plantar flexion and dorsiflexion to neutral", "Inversion/eversion below neutral"],
+            "modalities": ["Modalities to control swelling", "Incision mobilization modalities"]
+          },
+          "restOfBodyInterventions": {
+            "strengthening": ["Knee/hip exercises with no ankle involvement (leg lifts from sitting, prone, or side-lying)"],
+            "cardio": ["Non-weight-bearing fitness/cardio: one-leg bicycling, deep-water running"],
+            "other": ["Hydrotherapy within motion and weight-bearing limits"]
+          },
+          "gaitTraining": null
         },
         {
           "orderIndex": 2,
@@ -398,7 +505,10 @@
           "weightBearing": "Weight-bearing as tolerated (WBAT).",
           "assistiveDevices": [],
           "continuesFromOrderIndexes": [1],
-          "interventions": { "note": ["Continue the 2–4 week protocol"] }
+          "interventions": { "note": ["Continue the 2–4 week protocol"] },
+          "achillesInterventions": {},
+          "restOfBodyInterventions": { "note": ["Continue the 2–4 week protocol"] },
+          "gaitTraining": null
         },
         {
           "orderIndex": 3,
@@ -416,7 +526,17 @@
             "modalities": ["Ice, heat, ultrasound as indicated", "Incision mobilization"],
             "cardio": ["Fitness/cardio including WBAT: bicycling, elliptical, treadmill walking/running, StairMaster"],
             "other": ["Hydrotherapy"]
-          }
+          },
+          "achillesInterventions": {
+            "romMobility": ["Dorsiflexion stretching, slowly"],
+            "modalities": ["Ice, heat, ultrasound as indicated", "Incision mobilization"]
+          },
+          "restOfBodyInterventions": {
+            "strengthening": ["Graduated resistance exercises (open and closed kinetic chain, plus functional activities)"],
+            "cardio": ["Fitness/cardio including WBAT: bicycling, elliptical, treadmill walking/running, StairMaster"],
+            "other": ["Hydrotherapy"]
+          },
+          "gaitTraining": ["Proprioceptive and gait retraining"]
         },
         {
           "orderIndex": 4,
@@ -427,7 +547,10 @@
           "timeframeEndDays": 84,
           "weightBearing": "Wean off boot. Return to crutches and/or cane as necessary, then gradually wean off.",
           "assistiveDevices": ["crutches (weaning)", "cane (weaning, as necessary)"],
-          "interventions": { "note": ["Continue to progress range of motion, strength, proprioception"] }
+          "interventions": { "note": ["Continue to progress range of motion, strength, proprioception"] },
+          "achillesInterventions": {},
+          "restOfBodyInterventions": { "note": ["Continue to progress range of motion, strength, proprioception"] },
+          "gaitTraining": null
         },
         {
           "orderIndex": 5,
@@ -449,7 +572,17 @@
               "Increase dynamic weight-bearing exercise, include plyometric training",
               "Sport-specific retraining"
             ]
-          }
+          },
+          "achillesInterventions": {},
+          "restOfBodyInterventions": {
+            "progression": [
+              "Continue to progress ROM, strength, proprioception",
+              "Retrain strength, power, endurance",
+              "Increase dynamic weight-bearing exercise, include plyometric training",
+              "Sport-specific retraining"
+            ]
+          },
+          "gaitTraining": null
         }
       ]
     }

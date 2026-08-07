@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const interventionsRecordSchema = z.record(z.string().max(60), z.array(z.string().max(200)).max(40));
+
 export const customPhaseInputSchema = z.object({
   name: z.string().max(120).nullable(),
   timeframeLabel: z.string().min(1).max(120),
@@ -7,7 +9,9 @@ export const customPhaseInputSchema = z.object({
   timeframeEndDays: z.number().int().min(0).max(2000).nullable(),
   goals: z.array(z.string().max(200)).max(30),
   weightBearing: z.string().max(300).nullable(),
-  interventions: z.record(z.string().max(60), z.array(z.string().max(200)).max(40)),
+  gaitTraining: z.array(z.string().max(300)).max(20).nullable(),
+  achillesInterventions: interventionsRecordSchema,
+  restOfBodyInterventions: interventionsRecordSchema,
   criteriaToProgress: z.array(z.string().max(300)).max(20).nullable(),
 });
 
