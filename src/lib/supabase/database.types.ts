@@ -118,12 +118,15 @@ export type Database = {
           notes: string | null
           plan_date: string
           protocol_phase_id: string
+          region: string | null
           sort_order: number
+          source: string
           suggested_frequency: string | null
           suggested_reps: number | null
           suggested_sets: number | null
           user_id: string
           user_protocol_selection_id: string
+          workout_type: string | null
         }
         Insert: {
           dosage_source: string
@@ -133,12 +136,15 @@ export type Database = {
           notes?: string | null
           plan_date: string
           protocol_phase_id: string
+          region?: string | null
           sort_order?: number
+          source?: string
           suggested_frequency?: string | null
           suggested_reps?: number | null
           suggested_sets?: number | null
           user_id: string
           user_protocol_selection_id: string
+          workout_type?: string | null
         }
         Update: {
           dosage_source?: string
@@ -148,12 +154,15 @@ export type Database = {
           notes?: string | null
           plan_date?: string
           protocol_phase_id?: string
+          region?: string | null
           sort_order?: number
+          source?: string
           suggested_frequency?: string | null
           suggested_reps?: number | null
           suggested_sets?: number | null
           user_id?: string
           user_protocol_selection_id?: string
+          workout_type?: string | null
         }
         Relationships: [
           {
@@ -165,6 +174,51 @@ export type Database = {
           },
           {
             foreignKeyName: "daily_plan_entries_user_protocol_selection_id_fkey"
+            columns: ["user_protocol_selection_id"]
+            isOneToOne: false
+            referencedRelation: "user_protocol_selections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_workout_plans: {
+        Row: {
+          generated_at: string
+          id: string
+          plan_date: string
+          protocol_phase_id: string
+          protocol_suggestion_summary: string
+          user_id: string
+          user_protocol_selection_id: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          plan_date: string
+          protocol_phase_id: string
+          protocol_suggestion_summary: string
+          user_id: string
+          user_protocol_selection_id: string
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          plan_date?: string
+          protocol_phase_id?: string
+          protocol_suggestion_summary?: string
+          user_id?: string
+          user_protocol_selection_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_workout_plans_protocol_phase_id_fkey"
+            columns: ["protocol_phase_id"]
+            isOneToOne: false
+            referencedRelation: "protocol_phases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_workout_plans_user_protocol_selection_id_fkey"
             columns: ["user_protocol_selection_id"]
             isOneToOne: false
             referencedRelation: "user_protocol_selections"
@@ -492,11 +546,13 @@ export type Database = {
         Row: {
           actual_reps: number | null
           actual_sets: number | null
+          caused_pain: boolean | null
           completed: boolean
           daily_plan_entry_id: string | null
           duration_minutes: number | null
           effort_level: number | null
           id: string
+          liked: boolean | null
           logged_at: string
           notes: string | null
           pain_level: number | null
@@ -506,11 +562,13 @@ export type Database = {
         Insert: {
           actual_reps?: number | null
           actual_sets?: number | null
+          caused_pain?: boolean | null
           completed?: boolean
           daily_plan_entry_id?: string | null
           duration_minutes?: number | null
           effort_level?: number | null
           id?: string
+          liked?: boolean | null
           logged_at?: string
           notes?: string | null
           pain_level?: number | null
@@ -520,11 +578,13 @@ export type Database = {
         Update: {
           actual_reps?: number | null
           actual_sets?: number | null
+          caused_pain?: boolean | null
           completed?: boolean
           daily_plan_entry_id?: string | null
           duration_minutes?: number | null
           effort_level?: number | null
           id?: string
+          liked?: boolean | null
           logged_at?: string
           notes?: string | null
           pain_level?: number | null

@@ -12,8 +12,56 @@ import { UnverifiedProtocolBadge } from "@/components/protocol/unverified-protoc
 const PHASE_COLUMNS =
   "id, order_index, number, name, timeframe_label, timeframe_start_days, timeframe_end_days, goals, weight_bearing, gait_training, achilles_interventions, rest_of_body_interventions, criteria_to_progress, criteria_to_discharge, continues_from_order_indexes, assistive_devices";
 
+const ENTRY_COLUMNS =
+  "id, exercise_name, suggested_sets, suggested_reps, suggested_frequency, dosage_source, region, source, workout_type, sort_order";
+
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function toStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+}
+
+function ExerciseList({
+  entries,
+  planDate,
+  completedByEntryId,
+  feedbackByEntryId,
+}: {
+  entries: {
+    id: string;
+    exercise_name: string;
+    suggested_sets: number | null;
+    suggested_reps: number | null;
+    suggested_frequency: string | null;
+    dosage_source: string;
+    source: string;
+  }[];
+  planDate: string;
+  completedByEntryId: Map<string, boolean>;
+  feedbackByEntryId: Map<string, { liked: boolean | null; caused_pain: boolean | null }>;
+}) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {entries.map((entry) => (
+        <ExerciseItem
+          key={entry.id}
+          id={entry.id}
+          planDate={planDate}
+          exerciseName={entry.exercise_name}
+          sets={entry.suggested_sets}
+          reps={entry.suggested_reps}
+          frequency={entry.suggested_frequency}
+          dosageSource={entry.dosage_source}
+          initiallyCompleted={completedByEntryId.get(entry.id) ?? false}
+          isCustomGenerated={entry.source === "custom-generated"}
+          initiallyLiked={feedbackByEntryId.get(entry.id)?.liked ?? null}
+          initiallyCausedPain={feedbackByEntryId.get(entry.id)?.caused_pain ?? null}
+        />
+      ))}
+    </ul>
+  );
 }
 
 export default async function TodayPage() {
@@ -69,6 +117,15 @@ export default async function TodayPage() {
   const planDate = todayIso();
   const snapshot = review.generated_plan_snapshot as unknown as PlanSnapshot;
 
+  const { data: intake } = await supabase
+    .from("intake_responses")
+    .select("fitness_level, exercise_frequency, recovery_goal, available_equipment")
+    .eq("user_id", user.id)
+    .is("superseded_at", null)
+    .order("submitted_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   await ensureTodayEntries({
     supabase,
     userId: user.id,
@@ -76,28 +133,55 @@ export default async function TodayPage() {
     phaseId: activePhase.id,
     snapshot,
     planDate,
+    profile: {
+      fitnessLevel: intake?.fitness_level ?? null,
+      exerciseFrequency: intake?.exercise_frequency ?? null,
+      recoveryGoal: intake?.recovery_goal ?? null,
+      availableEquipment: toStringArray(intake?.available_equipment),
+    },
   });
 
   const { data: entries } = await supabase
     .from("daily_plan_entries")
-    .select("id, exercise_name, suggested_sets, suggested_reps, suggested_frequency, dosage_source, sort_order")
+    .select(ENTRY_COLUMNS)
     .eq("user_protocol_selection_id", selection.id)
     .eq("plan_date", planDate)
     .order("sort_order", { ascending: true });
 
+  const { data: workoutPlan } = await supabase
+    .from("daily_workout_plans")
+    .select("protocol_suggestion_summary")
+    .eq("user_protocol_selection_id", selection.id)
+    .eq("plan_date", planDate)
+    .maybeSingle();
+
   const { data: logs } = await supabase
     .from("session_logs")
-    .select("id, daily_plan_entry_id, completed, pain_level, effort_level, notes, duration_minutes")
+    .select("id, daily_plan_entry_id, completed, liked, caused_pain, pain_level, effort_level, notes, duration_minutes")
     .eq("user_id", user.id)
     .eq("plan_date", planDate);
 
   const completedByEntryId = new Map(
     (logs ?? []).filter((l) => l.daily_plan_entry_id).map((l) => [l.daily_plan_entry_id as string, l.completed]),
   );
+  const feedbackByEntryId = new Map(
+    (logs ?? [])
+      .filter((l) => l.daily_plan_entry_id)
+      .map((l) => [l.daily_plan_entry_id as string, { liked: l.liked, caused_pain: l.caused_pain }]),
+  );
   const summaryLog = (logs ?? []).find((l) => !l.daily_plan_entry_id) ?? null;
 
   const suggestedPhase = computeCurrentPhase(phases as PhaseRow[], selection.anchor_date);
   const canAdvance = suggestedPhase.order_index > activePhase.order_index;
+
+  const allEntries = entries ?? [];
+  const achillesEntries = allEntries.filter((e) => e.region === "achilles");
+  const restOfBodyEntries = allEntries.filter((e) => e.region === "rest_of_body");
+  const otherEntries = allEntries.filter((e) => e.region !== "achilles" && e.region !== "rest_of_body");
+  const customEntries = restOfBodyEntries.filter((e) => e.source === "custom-generated");
+  const strengthEntries = customEntries.filter((e) => e.workout_type === "strength");
+  const cardioEntries = customEntries.filter((e) => e.workout_type === "cardio");
+  const protocolFallbackEntries = restOfBodyEntries.filter((e) => e.source !== "custom-generated");
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 py-8">
@@ -120,30 +204,90 @@ export default async function TodayPage() {
         </div>
       )}
 
-      <section>
-        <h2 className="text-lg font-semibold">Today&apos;s exercises</h2>
-        {entries && entries.length > 0 ? (
-          <ul className="mt-3 flex flex-col gap-2">
-            {entries.map((entry) => (
-              <ExerciseItem
-                key={entry.id}
-                id={entry.id}
-                planDate={planDate}
-                exerciseName={entry.exercise_name}
-                sets={entry.suggested_sets}
-                reps={entry.suggested_reps}
-                frequency={entry.suggested_frequency}
-                dosageSource={entry.dosage_source}
-                initiallyCompleted={completedByEntryId.get(entry.id) ?? false}
-              />
-            ))}
-          </ul>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Achilles rehab &amp; exercises</h2>
+        {achillesEntries.length > 0 ? (
+          <ExerciseList
+            entries={achillesEntries}
+            planDate={planDate}
+            completedByEntryId={completedByEntryId}
+            feedbackByEntryId={feedbackByEntryId}
+          />
         ) : (
-          <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            No specific exercises listed for this phase — follow your PT&apos;s home program.
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            No ankle/Achilles-specific exercises listed for this phase — follow your PT&apos;s home program.
           </p>
         )}
       </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Rest of body</h2>
+
+        {customEntries.length > 0 ? (
+          <>
+            <div className="rounded-xl bg-neutral-100 p-3 text-sm text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
+              <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                I created a custom workout plan based on what the protocol suggested.
+              </p>
+              {workoutPlan?.protocol_suggestion_summary && (
+                <p className="mt-1.5 text-neutral-600 dark:text-neutral-400">
+                  <span className="font-medium">Protocol suggestion: </span>
+                  {workoutPlan.protocol_suggestion_summary}
+                </p>
+              )}
+              <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-500">
+                Suggested — confirm with your PT. Tell us how each one goes below so tomorrow&apos;s plan can adjust.
+              </p>
+            </div>
+
+            {strengthEntries.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Strength</h3>
+                <ExerciseList
+                  entries={strengthEntries}
+                  planDate={planDate}
+                  completedByEntryId={completedByEntryId}
+                  feedbackByEntryId={feedbackByEntryId}
+                />
+              </div>
+            )}
+            {cardioEntries.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Cardio</h3>
+                <ExerciseList
+                  entries={cardioEntries}
+                  planDate={planDate}
+                  completedByEntryId={completedByEntryId}
+                  feedbackByEntryId={feedbackByEntryId}
+                />
+              </div>
+            )}
+          </>
+        ) : protocolFallbackEntries.length > 0 ? (
+          <ExerciseList
+            entries={protocolFallbackEntries}
+            planDate={planDate}
+            completedByEntryId={completedByEntryId}
+            feedbackByEntryId={feedbackByEntryId}
+          />
+        ) : (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            No rest-of-body exercises listed for this phase.
+          </p>
+        )}
+      </section>
+
+      {otherEntries.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Other exercises</h2>
+          <ExerciseList
+            entries={otherEntries}
+            planDate={planDate}
+            completedByEntryId={completedByEntryId}
+            feedbackByEntryId={feedbackByEntryId}
+          />
+        </section>
+      )}
 
       <SessionSummaryForm
         planDate={planDate}

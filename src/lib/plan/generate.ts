@@ -86,6 +86,7 @@ export async function generatePlanSnapshot({
       weightBearing: phase.weight_bearing,
       gaitTraining: asStringArrayOrNull(phase.gait_training),
       assistiveDevices: phase.assistive_devices,
+      restOfBodyInterventions: phase.rest_of_body_interventions,
       criteriaToProgress: phase.criteria_to_progress,
       criteriaToDischarge: phase.criteria_to_discharge,
     },
