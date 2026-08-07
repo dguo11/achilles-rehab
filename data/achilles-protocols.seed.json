@@ -547,6 +547,7 @@
           "timeframeEndDays": 84,
           "weightBearing": "Wean off boot. Return to crutches and/or cane as necessary, then gradually wean off.",
           "assistiveDevices": ["crutches (weaning)", "cane (weaning, as necessary)"],
+          "continuesFromOrderIndexes": [3],
           "interventions": { "note": ["Continue to progress range of motion, strength, proprioception"] },
           "achillesInterventions": {},
           "restOfBodyInterventions": { "note": ["Continue to progress range of motion, strength, proprioception"] },
