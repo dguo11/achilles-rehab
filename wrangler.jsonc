@@ -16,5 +16,28 @@
     // Non-secret. Secrets (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY) are
     // set with `wrangler secret put`, not here.
     "GEMINI_MODEL": "gemini-3.1-flash-lite"
+  },
+  // Staging: a separate Worker (achilla-staging) for testing changes before
+  // they reach production. Shares the same Supabase project as production
+  // (test data there gets cleaned up the same way test data always has been
+  // in this app) — deploy with `npm run deploy:staging`. Its own secrets
+  // (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY) must be set separately with
+  // `wrangler secret put <NAME> --env staging`; Worker secrets are per-Worker
+  // and don't carry over from the production Worker even when the values
+  // are identical.
+  "env": {
+    "staging": {
+      "name": "achilla-staging",
+      "assets": {
+        "directory": ".open-next/assets",
+        "binding": "ASSETS"
+      },
+      "observability": {
+        "enabled": true
+      },
+      "vars": {
+        "GEMINI_MODEL": "gemini-3.1-flash-lite"
+      }
+    }
   }
 }

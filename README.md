@@ -12,6 +12,14 @@ confirm you've reviewed it with your PT.
 email confirmation is currently disabled in Supabase Auth for local testing
 convenience. Re-enable it before any real user signs up.
 
+**Staging deployment:** https://achilla-staging.dguo11.workers.dev — a
+separate Worker for testing changes before they reach production
+(`npm run deploy:staging`). Shares the production Supabase project, so
+clean up any test accounts/data the same way test data has always been
+cleaned up in this app. `claude/achilla-staging` is the
+working/test branch — merge to `main` (which drives the production deploy)
+once changes are verified on staging.
+
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind, mobile-first
@@ -30,8 +38,9 @@ npm run dev                  # Next.js dev server, http://localhost:3000
 ## Cloudflare preview / deploy
 
 ```bash
-npm run preview   # build + run in the actual Workers runtime locally
-npm run deploy     # build + deploy to Cloudflare Workers
+npm run preview        # build + run in the actual Workers runtime locally
+npm run deploy          # build + deploy to Cloudflare Workers (production)
+npm run deploy:staging  # build + deploy to the staging Worker
 ```
 
 Secrets (`SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`) are set with
